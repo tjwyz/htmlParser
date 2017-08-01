@@ -1,0 +1,22 @@
+{
+  "name": "vtp",
+  "version": "0.0.0",
+  "description": "vue template parser",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -w -c rollup/config.main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tjwyz/vtp.git"
+  },
+  "author": "tjwyz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tjwyz/vtp/issues"
+  },
+  "homepage": "https://github.com/tjwyz/vtp#readme",
+  "devDependencies": {
+    "rollup-plugin-buble": "^0.19.1"
+  }
+}
