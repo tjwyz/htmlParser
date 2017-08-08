@@ -19,81 +19,12 @@ const argRE = /:(.*)$/
 //例如，.prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDefault()：
 const modifierRE = /\.[^.]+/g
 
-function getAndRemoveAttr(el, tagname){
-	let val
-	if ((val = el.attrsMap[tagname]) != null) {
-		const list = el.attrsList
-		for (let i = 0, l = list.length; i < l; i++) {
-			if (list[i].name === tagname) {
-				list.splice(i, 1)
-				break
-			}
-		}
-	}
-	return val
-}
 
-function makeAttrsMap (attrs) {
-	const map = {}
-	for (let i = 0, l = attrs.length; i < l; i++) {
-		map[attrs[i].name] = attrs[i].value
-	}
-	return map
-}
-//dynamicValue  / staticValue
-function getBindingAttr (el, name) {
-	//bindRE
-	const dynamicValue =getAndRemoveAttr(el, ':' + name) || getAndRemoveAttr(el, 'v-bind:' + name)
-	const staticValue = getAndRemoveAttr(el, name)
-	if (dynamicValue != null) {
-		return parseFilters(dynamicValue)
-	} else if (staticValue != null) {
-		return JSON.stringify(staticValue)
-	}
-}
-function addProp (el, name, value) {
-	(el.props || (el.props = [])).push({ name, value })
-}
-function addAttr (el, name, value) {
-	(el.attrs || (el.attrs = [])).push({ name, value })
-}
-function addHandler (el, name, value, modifiers, important, warn) {
-	// check capture modifier
-	if (modifiers && modifiers.capture) {
-		delete modifiers.capture
-		name = '!' + name // mark the event as captured
-	}
-	if (modifiers && modifiers.once) {
-		delete modifiers.once
-		name = '~' + name // mark the event as once
-	}
-	/* istanbul ignore if */
-	if (modifiers && modifiers.passive) {
-		delete modifiers.passive
-		name = '&' + name // mark the event as passive
-	}
-	let events
-	//区分原生事件与否  最后都是操作events
-	if (modifiers && modifiers.native) {
-		delete modifiers.native
-		events = el.nativeEvents || (el.nativeEvents = {})
-	} else {
-		events = el.events || (el.events = {})
-	}
+import {getAndRemoveAttr, makeAttrsMap, getBindingAttr, addProp, addAttr, addHandler, addDirective} from './modify-utils'
 
-	const newHandler = { value, modifiers }
-	const handlers = events[name]
-	// 还特么连续写两个/多个v-on的？？？
-	// 真严谨......
-	// if (Array.isArray(handlers)) {
-	// 	important ? handlers.unshift(newHandler) : handlers.push(newHandler)
-	// } else if (handlers) {
-	// 	events[name] = important ? [newHandler, handlers] : [handlers, newHandler]
-	// } else {
-		events[name] = newHandler
-	// }
-}
+import {parseText} from './text-parser'
 
+import {transforms} from './basecompiler/modules/index'
 // 指令
 function processFor (el) {
 	//v-for="tab in tabs"
@@ -141,19 +72,20 @@ function processIf (el) {
 		}
 	}
 }
-function processIfConditions (el, parent) {
-	const prev = findPrevElement(parent.children)
-	if (prev && prev.if) {
-		addIfCondition(prev, {
-		exp: el.elseif,
-		block: el
-		})
-	} else if (process.env.NODE_ENV !== 'production') {
-		warn(
-		`v-${el.elseif ? ('else-if="' + el.elseif + '"') : 'else'} ` +
-		`used on element <${el.tag}> without corresponding v-if.`
-		)
+function findPrevIfElement (children) {
+	let i = children.length
+	let re
+	//从下往上数  就近选tag
+	while (i--) {
+		if (children[i].type === 1) {
+			re = children[i]
+		} else {
+			//`text "${children[i].text.trim()}" between v-if and v-else(-if) will be ignored.`
+			children.pop()
+		}
 	}
+	if (re && re.if) return re
+	return undefined
 }
 
 function addIfCondition (el, condition) {
@@ -162,6 +94,21 @@ function addIfCondition (el, condition) {
 	}
 	el.ifConditions.push(condition)
 }
+function processIfConditions (el, parent) {
+	//就近找上一个兄弟if tag
+	//如果上一个tag不是if  则...应该报错
+	const prev = findPrevIfElement(parent.children)
+	if (prev) {
+		addIfCondition(prev, {
+			exp: el.elseif,
+			block: el
+		})
+	} else {
+		//without corresponding v-if.`
+	}
+}
+
+
 function processOnce (el) {
 	const once = getAndRemoveAttr(el, 'v-once')
 	if (once != null) {
@@ -319,15 +266,13 @@ function processAttrs (el) {
 			}
 		} else { //text
 			// literal attribute
+			const expression = parseText(value, delimiters)
 
+			if (expression) {
+				//warn instead of <div id="{{ val }}">, use <div :id="val">
+			}
+			//!!JSON.stringify
 			addAttr(el, name, JSON.stringify(value))
-			// #6887 firefox doesn't update muted state if set via attribute
-			// even immediately after element creation
-			// if (!el.component &&
-			// name === 'muted' &&
-			// platformMustUseProp(el.tag, el.attrsMap.type, name)) {
-			// 	addProp(el, name, 'true')
-			// }
 		}
 	}
 }
@@ -353,21 +298,21 @@ let tagPush = (tag, attrs, unary) => {
 	processFor(element)
 	processIf(element)
 	processOnce(element)
-
-
 	// element-scope stuff
 	// 特殊特性
 	processKey(element)
+
 	// determine whether this is a plain element after
 	// removing structural attributes
 	element.plain = !element.key && !element.attrsList.length
+
 	processRef(element)
 	processSlot(element)
 	processComponent(element)
 
-	// for (let i = 0; i < transforms.length; i++) {
-	// 	element = transforms[i](element, options) || element
-	// }
+	for (let i = 0; i < transforms.length; i++) {
+		element = transforms[i](element, options) || element
+	}
 	processAttrs(element)
 
 
@@ -375,16 +320,19 @@ let tagPush = (tag, attrs, unary) => {
 	if (!root) {
 		root = element
 	} else if (!stack.length) {
+		//永远进不去呢....
 		// allow root elements with v-if, v-else-if and v-else
 		if (root.if && (element.elseif || element.else)) {
-		  addIfCondition(root, {
-		    exp: element.elseif,
-		    block: element
-		  })
+			addIfCondition(root, {
+				exp: element.elseif,
+				block: element
+			})
 		}
 	}
 
+	//为当前parent添加children
 	if (currentParent && !element.forbidden) {
+		//if 回正常进入parent.children   而else/elseif进的是上一个兄弟if的ifConditions
 		if (element.elseif || element.else) {
 			processIfConditions(element, currentParent)
 		} else if (element.slotScope) { // scoped slot
@@ -396,24 +344,25 @@ let tagPush = (tag, attrs, unary) => {
 			element.parent = currentParent
 		}
 	}
+	//成为parent
 	if (!unary) {
 		currentParent = element
+		//历史记录
 		stack.push(element)
-	} else {
-		closeElement(element)
 	}
 }
-let tagPop = () => {
-      // remove trailing whitespace
-      const element = stack[stack.length - 1]
-      const lastNode = element.children[element.children.length - 1]
-      if (lastNode && lastNode.type === 3 && lastNode.text === ' ' && !inPre) {
+let tagPop = (tag, start, end) => {
+	// remove trailing whitespace
+	const element = stack[stack.length - 1]
+	const lastNode = element.children[element.children.length - 1]
+	//当前一个标签要闭合的时候 可能有trailing whitespace
+	//如果有则去掉
+	if (lastNode && lastNode.type === 3 && lastNode.text === ' ') {
 		element.children.pop()
-      }
-      // pop stack
-      stack.length -= 1
-      currentParent = stack[stack.length - 1]
-      closeElement(element)
+	}
+	// pop stack
+	stack.length -= 1
+	currentParent = stack[stack.length - 1]
 }
 let chars = (text) => {
 	if (!currentParent) {
@@ -421,20 +370,27 @@ let chars = (text) => {
 	}
 
 	const children = currentParent.children
-	text = inPre || text.trim()
-	? isTextTag(currentParent) ? text : decodeHTMLCached(text)
-	// only preserve whitespace if its not right after a starting tag
-	: preserveWhitespace && children.length ? ' ' : ''
+	text = text.trim()
+	// vue里可能存在text分两段chars的情况？
+	// ? isTextTag(currentParent) ? text : decodeHTMLCached(text)
+	// // only preserve whitespace if its not right after a starting tag
+	// : preserveWhitespace && children.length ? ' ' : ''
 	if (text) {
 		let res
-		if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
+		//delimiters值修改文案默认分隔符
+		//["{{", "}}"] 默认值
+		
+		//{{}}
+		if (text !== ' ' && (res = parseText(text, delimiters))) {
 			children.push({
 				type: 2,
 				expression: res.expression,
 				tokens: res.tokens,
 				text
 			})
+		//plaintext
 		} else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
+
 			children.push({
 				type: 3,
 				text
