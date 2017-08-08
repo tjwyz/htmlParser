@@ -23,8 +23,10 @@ const modifierRE = /\.[^.]+/g
 import {getAndRemoveAttr, makeAttrsMap, getBindingAttr, addProp, addAttr, addHandler, addDirective} from './modify-utils'
 
 import {parseText} from './text-parser'
+import {parseFilters} from './filter-parser'
 
-import {transforms} from './basecompiler/modules/index'
+
+import processStatic from './basecompiler/modules/index'
 // 指令
 function processFor (el) {
 	//v-for="tab in tabs"
@@ -265,8 +267,9 @@ function processAttrs (el) {
 				addDirective(el, name, rawName, value, arg, modifiers)
 			}
 		} else { //text
-			// literal attribute
-			const expression = parseText(value, delimiters)
+			// delimiters 自定义值  默认{{  }}
+			// const expression = parseText(value, delimiters)
+			const expression = parseText(value)
 
 			if (expression) {
 				//warn instead of <div id="{{ val }}">, use <div :id="val">
@@ -283,7 +286,6 @@ let init = () => {
 	stack = []
 }
 let tagPush = (tag, attrs, unary) => {
-
 	let element = {
 		type: 1,
 		tag,
@@ -310,8 +312,8 @@ let tagPush = (tag, attrs, unary) => {
 	processSlot(element)
 	processComponent(element)
 
-	for (let i = 0; i < transforms.length; i++) {
-		element = transforms[i](element, options) || element
+	for (let i = 0; i < processStatic.length; i++) {
+		element = processStatic[i](element, options) || element
 	}
 	processAttrs(element)
 
@@ -352,6 +354,8 @@ let tagPush = (tag, attrs, unary) => {
 	}
 }
 let tagPop = (tag, start, end) => {
+
+	//
 	// remove trailing whitespace
 	const element = stack[stack.length - 1]
 	const lastNode = element.children[element.children.length - 1]
@@ -405,4 +409,7 @@ let comment = (text) => {
 		isComment: true
 	})
 }
-export {init, tagPush, tagPop, chars, comment}
+let out = () => {
+	return root
+}
+export {init, tagPush, tagPop, chars, comment, out}

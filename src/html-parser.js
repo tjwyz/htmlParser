@@ -9,6 +9,7 @@ export class Parser{
         this.tagPop = options.tagPop;
         this.chars = options.chars;
         this.comment = options.comment;
+        this.out = options.out;
         this.index = 0;
         this.last = undefined;
         this.lastTag = undefined;
@@ -98,15 +99,16 @@ export class Parser{
         //一元标签内不可能有文案,所以不进行pushstack,自然也没有了容纳文案的机会
         //一元标签不一定<unary/>也可能<unary>
         //
+
         //<div/> 也会认为是个一元标签..对应一个没有plaintext的div
         const unary = isUnaryTag(tagName) || unarySlash
 
         const l = match.attrs.length
         const attrs = new Array(l)
         for (let i = 0; i < l; i++) {
-            const value = args[3] || args[4] || args[5] || ''
+            const value = match.attrs[i][3] || match.attrs[i][4] || match.attrs[i][5] || ''
             attrs[i] = {
-                name: args[1],
+                name: match.attrs[i][1],
                 value: value
             }
         }
@@ -123,7 +125,6 @@ export class Parser{
     }
 
     handleEndTag (tagName, start, end) {
-        debugger
         let pos, lowerCasedTagName
         if (start == null) start = index
         if (end == null) end = index
@@ -154,7 +155,7 @@ export class Parser{
                 //<div><p><a></div>
                 //pop stack by order
                 if (this.tagPop) {
-                    this.tagPop(stack[i].tag, start, end)
+                    this.tagPop(this.stack[i].tag, start, end)
                 }
             }
 
@@ -250,6 +251,6 @@ export class Parser{
                 this.chars(text)
             }
         }
-
+        return this.out()
     }
 }

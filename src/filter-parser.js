@@ -5,7 +5,7 @@
 //<div v-bind:id="rawId | formatId"></div>
 //
 //
-//能被filter一定是个binding值
+//能被parseFilter的一定是个binding值
 const validDivisionCharRE = /[\w).+\-_$\]]/
 function wrapFilter (exp, filter) {
 	const i = filter.indexOf('(')
