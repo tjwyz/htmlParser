@@ -1,8 +1,10 @@
+//修饰抽象语法树的方法
+
 /**
  * ast 修饰方法
  */
 
-import { parseFilters } from './filter-parser'
+import parseFilters from './parser/parseFilters'
 //根据attrsMap 只修饰attrsList.
 //并返回对应值
 export function getAndRemoveAttr(el, tagname){

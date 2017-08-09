@@ -1,17 +1,9 @@
-
 import {attribute, ncname, qnameCapture, startTagOpen, startTagClose, endTag, doctype, comment, conditionalComment} from './regular';
 import {isUnaryTag, canBeLeftOpenTag, isNonPhrasingTag} from './mapping';
-export class Parser{
+export default class Parser{
     constructor(options){
-        this.stack = [];
-        this.init = options.init;
-        this.tagPush = options.tagPush;
-        this.tagPop = options.tagPop;
-        this.chars = options.chars;
-        this.comment = options.comment;
-        this.out = options.out;
+        this.htmlStack = [];
         this.index = 0;
-        this.last = undefined;
         this.lastTag = undefined;
     }
     advance(n){
@@ -114,7 +106,7 @@ export class Parser{
         }
 
         if (!unary) {
-            this.stack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs })
+            this.htmlStack.push({ tag: tagName, lowerCasedTag: tagName.toLowerCase(), attrs: attrs })
             this.lastTag = tagName
         }
 
@@ -135,8 +127,8 @@ export class Parser{
 
         // Find the closest opened tag of the same type
         if (tagName) {
-            for (pos = this.stack.length - 1; pos >= 0; pos--) {
-                if (this.stack[pos].lowerCasedTag === lowerCasedTagName) {
+            for (pos = this.htmlStack.length - 1; pos >= 0; pos--) {
+                if (this.htmlStack[pos].lowerCasedTag === lowerCasedTagName) {
                     break
                 }
             }
@@ -147,7 +139,7 @@ export class Parser{
 
         if (pos >= 0) {
             // Close all the open elements, up the stack
-            for (let i = this.stack.length - 1; i >= pos; i--) {
+            for (let i = this.htmlStack.length - 1; i >= pos; i--) {
                 //警告这些没闭合的自动被闭合了
                 // warn(
                 // `tag <${stack[i].tag}> has no matching end tag.`
@@ -155,21 +147,17 @@ export class Parser{
                 //<div><p><a></div>
                 //pop stack by order
                 if (this.tagPop) {
-                    this.tagPop(this.stack[i].tag, start, end)
+                    this.tagPop(this.htmlStack[i].tag, start, end)
                 }
             }
 
             // Remove the open elements from the stack
-            this.stack.length = pos
-            this.lastTag = pos && this.stack[pos - 1].tag
+            this.htmlStack.length = pos
+            this.lastTag = pos && this.htmlStack[pos - 1].tag
         }
     }
 
     parse(html){
-        this.html = html;
-        this.raw = html;
-        this.init();
-
         while(this.html){
             //indexOf() 方法可返回某个指定的字符串值在字符串中首次出现的位置
             let textEnd = this.html.indexOf('<')
@@ -251,6 +239,6 @@ export class Parser{
                 this.chars(text)
             }
         }
-        return this.out()
     }
+    
 }

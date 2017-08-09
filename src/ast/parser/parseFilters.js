@@ -1,12 +1,16 @@
+//！两种case使用filter : bind值 与text值
+
 //<!-- 在双花括号中 -->
 //{{ message | capitalize }}
 
 //<!-- 在 `v-bind` 中 -->
 //<div v-bind:id="rawId | formatId"></div>
-//
-//
-//能被parseFilter的一定是个binding值
+
+
 const validDivisionCharRE = /[\w).+\-_$\]]/
+
+//xx|auto  "_f("auto")(xx)"
+
 function wrapFilter (exp, filter) {
 	const i = filter.indexOf('(')
 	if (i < 0) {
@@ -24,7 +28,7 @@ function wrapFilter (exp, filter) {
 		return `_f("${name}")(${exp},${args}`
 	}
 }
-export function parseFilters (exp) {
+export default function parseFilters (exp) {
 
 	let inSingle = false
 	let inDouble = false

@@ -1,15 +1,9 @@
-import { parseFilters } from './filter-parser'
-//{{text}}
-// .|\n 所有字符无脑匹配
-//?如果紧跟在任何量词 * + ? {} 的后面，将会使量词变为非贪婪的
-//
-//
-//
-//文字部分JSON.stringify  binding值部分进入parseFilter
+import parseFilters from './parseFilters'
+
 const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/
 
-
-export function parseText (text,delimiters) {
+//文字部分JSON.stringify  binding值部分进入parseFilter
+export default function parseText (text,delimiters) {
 
     //plain{{this.value}}text
 
