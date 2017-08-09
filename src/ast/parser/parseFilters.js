@@ -6,7 +6,6 @@
 //<!-- 在 `v-bind` 中 -->
 //<div v-bind:id="rawId | formatId"></div>
 
-
 const validDivisionCharRE = /[\w).+\-_$\]]/
 
 //xx|auto  "_f("auto")(xx)"

@@ -16,7 +16,7 @@ export default class Parser extends htmlParser{
 		this.root;
 		this.currentParent;
 	}
-	tagPush (tag, attrs, unary) {
+	tagPush (tag, attrs, unary, start ,end) {
 
 		//attrsList 原始属性  attrsMap 原始属性对应表
 		let element = {
@@ -25,7 +25,8 @@ export default class Parser extends htmlParser{
 			attrsList: attrs,
 			attrsMap: makeAttrsMap(attrs),
 			currentParent:this.currentParent,
-			children: []
+			children: [],
+			start
 		}
 
 		// structural directives
@@ -87,6 +88,9 @@ export default class Parser extends htmlParser{
 			this.currentParent = element
 			//历史记录
 			this.astStack.push(element)
+		} else {
+			element.end = end
+			element.raw = this.raw.slice(element.start, element.end)
 		}
 	}
 	tagPop (tag, start, end) {
@@ -99,6 +103,9 @@ export default class Parser extends htmlParser{
 		if (lastNode && lastNode.type === 3 && lastNode.text === ' ') {
 			element.children.pop()
 		}
+
+		element.end = end
+		element.raw = this.raw.slice(element.start, element.end)
 		// pop stack
 		this.astStack.length -= 1
 		this.currentParent = this.astStack[this.astStack.length - 1]
@@ -121,18 +128,24 @@ export default class Parser extends htmlParser{
 			
 			//{{}}
 			if (text !== ' ' && (res = parseText(text))) {
-				children.push({
+				let element = {
 					type: 2,
 					expression: res.expression,
 					tokens: res.tokens,
-					text
-				})
+					text,
+					start,
+					end
+				}
+				element.raw = this.raw.slice(element.start, element.end)
+				children.push(element)
 			//plaintext 
 			} else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
-				children.push({
+				let element = {
 					type: 3,
 					text
-				})
+				}
+				element.raw = this.raw.slice(element.start, element.end)
+				children.push(element)
 			}
 		}
 	}

@@ -117,6 +117,7 @@ export default class Parser{
     }
 
     handleEndTag (tagName, start, end) {
+        //pos 要闭合到哪个层级
         let pos, lowerCasedTagName
         if (start == null) start = index
         if (end == null) end = index
@@ -153,7 +154,7 @@ export default class Parser{
 
             // Remove the open elements from the stack
             this.htmlStack.length = pos
-            this.lastTag = pos && this.htmlStack[pos - 1].tag
+            this.lastTag = this.htmlStack[pos - 1] && this.htmlStack[pos - 1].tag
         }
     }
 
