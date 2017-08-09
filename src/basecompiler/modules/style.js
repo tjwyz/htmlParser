@@ -22,16 +22,13 @@ function parseStyleText (cssText) {
 }
 
 function transformNode (el, options) {
-    const warn = options.warn || baseWarn
     const staticStyle = getAndRemoveAttr(el, 'style')
     if (staticStyle) {
         /* istanbul ignore if */
-        if (process.env.NODE_ENV !== 'production') {
-            const expression = parseText(staticStyle, options.delimiters)
-            if (expression) {
-                //warn
-                //'instead of <div style="{{ val }}">, use <div :style="val">.'
-            }
+        const expression = parseText(staticStyle)
+        if (expression) {
+        //warn
+        //'instead of <div style="{{ val }}">, use <div :style="val">.'
         }
         // "position:absolute;z-index:1" to "{"position":"absolute","z-index":"1"}"
         el.staticStyle = JSON.stringify(parseStyleText(staticStyle))

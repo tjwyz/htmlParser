@@ -4,22 +4,20 @@ import { parseText } from '../../text-parser'
 import { getAndRemoveAttr,getBindingAttr } from '../../modify-utils'
 
 function transformNode (el, options) {
-    const warn = options.warn || baseWarn
     const staticClass = getAndRemoveAttr(el, 'class')
 
     if (staticClass) {
-        if (process.env.NODE_ENV !== 'production') {
-            const expression = parseText(staticClass, options.delimiters)
-            if (expression) {
-                //warn
-                //'instead of <div class="{{ val }}">, use <div :class="val">.'
-            }
+        const expression = parseText(staticClass)
+        if (expression) {
+            //warn
+            //'instead of <div class="{{ val }}">, use <div :class="val">.'
         }
         el.staticClass = JSON.stringify(staticClass)
     }
     //:class="val"
     //不许写filter了..
-    const classBinding = getBindingAttr(el, 'class', false /* getStatic */)
+    //true 代表只要动态值
+    const classBinding = getBindingAttr(el, 'class', true)
     if (classBinding) {
         el.classBinding = classBinding
     }

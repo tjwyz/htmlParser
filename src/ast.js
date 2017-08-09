@@ -17,7 +17,8 @@ const argRE = /:(.*)$/
 
 //修饰符 (Modifiers) 是以半角句号 . 指明的特殊后缀，用于指出一个指令应该以特殊方式绑定。
 //例如，.prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDefault()：
-const modifierRE = /\.[^.]+/g
+// /g 全局/贪婪匹配
+const modifierRE = /\.(.+)/
 
 
 import {getAndRemoveAttr, makeAttrsMap, getBindingAttr, addProp, addAttr, addHandler, addDirective} from './modify-utils'
@@ -187,17 +188,13 @@ function processComponent (el) {
 }
 
 function parseModifiers (name) {
-	// modifierRE  = /\.[^.]+/g
-	// /g 全局匹配
-	// '@submit.prevent.ssss'.match(modifierRE)
-	// ['prevent','ssss']
-	const match = name.match(modifierRE)
-	//match == ['.prevent']
-	if (match) {
+
+	let match = name.match(modifierRE)
+	match = match && match[1].split(".")
+
+	if (match && match.length) {
 		const ret = {}
-		match.forEach(m => { ret[m.slice(1)] = true })
-		//ret['prevent'] = true
-		//ret['ssss'] = true
+		match.forEach(m => { ret[m] = true })
 		return ret
 	}
 }
@@ -210,28 +207,43 @@ function processAttrs (el) {
 		name = rawName = list[i].name
 		value = list[i].value
 		
-		if (dirRE.test(name)) { //direcative
-			//  element is direcative
-			el.isDirecative = true
-			// modifiers
+		//属性中：
+		//1.绑定指令进attrs/props
+		//2.事件指令进events/nativeEvents
+		//3.自定义的指令进directives
+		//4.非指令进attrs  但是非指令属性的value需要被JSON.stringify
+		//
+
+		// name  v-bind:tjwyz.emm
+		if (dirRE.test(name)) { 
+			//attr is a direcative
+			//binding值都要经过filter(|)处理
+			el.hasBindings = true
+
+			//deal modifier
+			//在此之后name就没有"."了
+			//返回值是个对象
+			// modifiers['prevent'] = true
+			// modifiers['ssss'] = true
 			modifiers = parseModifiers(name)
 			if (modifiers) {
-				// '@submit.prevent.ssss' ==> '@submit'
 				name = name.replace(modifierRE, '')
 			}
 
 			if (bindRE.test(name)) { // v-bind
+				// v-bind:tjwyz = 1
+				// name == tjwyz
 				name = name.replace(bindRE, '')
 				value = parseFilters(value)
 				isProp = false
 				if (modifiers) {
 					//尼玛...
 					//<div v-bind:text-content.prop="text"></div>
-					if (modifiers.prop) {
-						isProp = true
-						name = camelize(name)
-						if (name === 'innerHtml') name = 'innerHTML'
-					}
+					// if (modifiers.prop) {
+					// 	isProp = true
+					// 	name = camelize(name)
+					// 	if (name === 'innerHtml') name = 'innerHTML'
+					// }
 					// if (modifiers.camel) {
 					// 	name = camelize(name)
 					// }
@@ -247,23 +259,38 @@ function processAttrs (el) {
 				// if (!el.component && (isProp || platformMustUseProp(el.tag, el.attrsMap.type, name))) {
 				// 	addProp(el, name, value)
 				// } else {
-					addAttr(el, name, value)
+				
+
+				//这里的value可没被JSON.stringify
+				addAttr(el, name, value)
+				
 				// }
 			} else if (onRE.test(name)) { // v-on
+				// v-on:tjwyz = 1
+				// name == tjwyz
 				name = name.replace(onRE, '')
-				addHandler(el, name, value, modifiers, false, warn)
+				//最后一个参数false先保留着 暂时没明白  和model有关
+				addHandler(el, name, value, modifiers, false)
 			} else { // normal directives
 				//v-lx:tjwyz=1
+				
+				//name == lx:tjwyz
 				name = name.replace(dirRE, '')
-				//:tjwyz=1
-				const argMatch = name.match(argRE)
+				
 				//arg == tjwyz
+				const argMatch = name.match(argRE)
 				const arg = argMatch && argMatch[1]
+
 				if (arg) {
-					//name == v-lx
+					//name == lx
 					name = name.slice(0, -(arg.length + 1))
 				}
+
+				//name == lx
+				//arg == tjwyz
 				//value == 1
+				//modifiers == prevent
+				//rawName == v-lx:tjwyz.prevent
 				addDirective(el, name, rawName, value, arg, modifiers)
 			}
 		} else { //text
@@ -274,6 +301,8 @@ function processAttrs (el) {
 			if (expression) {
 				//warn instead of <div id="{{ val }}">, use <div :id="val">
 			}
+
+			//不是binding值都需要JSON.stringify
 			//!!JSON.stringify
 			addAttr(el, name, JSON.stringify(value))
 		}
@@ -282,10 +311,12 @@ function processAttrs (el) {
 
 
 
+
 let init = () => {
 	stack = []
 }
 let tagPush = (tag, attrs, unary) => {
+	//attrsList 原始属性  attrsMap 原始属性对应表
 	let element = {
 		type: 1,
 		tag,
@@ -305,15 +336,16 @@ let tagPush = (tag, attrs, unary) => {
 	processKey(element)
 
 	// determine whether this is a plain element after
-	// removing structural attributes
+	// removing structural attributes'
+	// 在此之前会清attrsList
 	element.plain = !element.key && !element.attrsList.length
-
+	
 	processRef(element)
 	processSlot(element)
 	processComponent(element)
-
+	
 	for (let i = 0; i < processStatic.length; i++) {
-		element = processStatic[i](element, options) || element
+		element = processStatic[i](element) || element
 	}
 	processAttrs(element)
 

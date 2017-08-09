@@ -27,16 +27,16 @@ export function makeAttrsMap (attrs) {
 	return map
 }
 //dynamicValue  / staticValue
-//注意 staticValue 时  JSON.stringify 了一个字符串....
-//并返回对应值
-export function getBindingAttr (el, name) {
+//默认先取动态值 再取静态值  找到就立刻return
+//第三个参数可以决定只要动态值 没有动态值就算了
+export function getBindingAttr (el, name, onlyDynamic) {
 	//bindRE
 	const dynamicValue =getAndRemoveAttr(el, ':' + name) || getAndRemoveAttr(el, 'v-bind:' + name)
-	const staticValue = getAndRemoveAttr(el, name)
 	if (dynamicValue != null) {
 		return parseFilters(dynamicValue)
-	} else if (staticValue != null) {
-		return JSON.stringify(staticValue)
+	} else if (!onlyDynamic) {
+		const staticValue = getAndRemoveAttr(el, name)
+		if(staticValue) return JSON.stringify(staticValue)
 	}
 }
 export function addProp (el, name, value) {
@@ -45,7 +45,7 @@ export function addProp (el, name, value) {
 export function addAttr (el, name, value) {
 	(el.attrs || (el.attrs = [])).push({ name, value })
 }
-export function addHandler (el, name, value, modifiers, important, warn) {
+export function addHandler (el, name, value, modifiers, important) {
 	// check capture modifier
 	if (modifiers && modifiers.capture) {
 		delete modifiers.capture
@@ -60,25 +60,30 @@ export function addHandler (el, name, value, modifiers, important, warn) {
 		delete modifiers.passive
 		name = '&' + name // mark the event as passive
 	}
+
 	let events
 	//区分原生事件与否  最后都是操作events
 	if (modifiers && modifiers.native) {
+		//为嘛删呢..
 		delete modifiers.native
 		events = el.nativeEvents || (el.nativeEvents = {})
 	} else {
 		events = el.events || (el.events = {})
 	}
 
+	//value依然没有被JSON.stringify  就是这样很正常..
+	
+	//es6 Enhanced Object Properties
 	const newHandler = { value, modifiers }
-	const handlers = events[name]
-	// 还特么连续写两个/多个v-on的？？？
-	// 真严谨......
+
+	// const handlers = events[name]
+	// 写两个/多个v-on的  也不是不可能  绑定个click 再绑定个scroll....先Ban了
 	// if (Array.isArray(handlers)) {
 	// 	important ? handlers.unshift(newHandler) : handlers.push(newHandler)
 	// } else if (handlers) {
 	// 	events[name] = important ? [newHandler, handlers] : [handlers, newHandler]
 	// } else {
-		events[name] = newHandler
+	events[name] = newHandler
 	// }
 }
 export function addDirective (el,name,rawName,value,arg,modifiers) {
