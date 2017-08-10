@@ -12,17 +12,20 @@ function findPrevIfElement (children) {
 			children.pop()
 		}
 	}
+	//紧靠自己的兄弟if节点
 	if (re && re.if) return re
 	return undefined
 }
 
-function addIfCondition (el, condition) {
+export function addIfCondition (el, condition) {
+	//el 要插入到那个element中
 	if (!el.ifConditions) {
 		el.ifConditions = []
 	}
 	el.ifConditions.push(condition)
 }
-function processIfConditions (el, parent) {
+//处理else/elseif
+export function processIfConditions (el, parent) {
 	//就近找上一个兄弟if tag
 	//如果上一个tag不是if  则...应该报错
 	const prev = findPrevIfElement(parent.children)
@@ -35,11 +38,12 @@ function processIfConditions (el, parent) {
 		//without corresponding v-if.`
 	}
 }
-export default function processIf (el) {
+export function processIf (el) {
 	//v-if="ok"
 	const exp = getAndRemoveAttr(el, 'v-if')
 	if (exp) {
 		el.if = exp
+		//插到自己上
 		addIfCondition(el, {
 			exp: exp,
 			block: el

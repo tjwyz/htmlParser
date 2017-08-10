@@ -1,7 +1,7 @@
 import htmlParser from '../html/index'
 import { makeAttrsMap } from './modifier'
 
-import { processAttrs, processComponent, processFor, processIf, processKey, processOnce, processRef, processSlot, processClass, processStyle} from './process/index'
+import { processAttrs, processComponent, processFor, processIf, processIfConditions, addIfCondition, processKey, processOnce, processRef, processSlot, processClass, processStyle} from './process/index'
 import { parseFilters, parseModifiers, parseTexts } from './parser/index'
 
 export default class Parser extends htmlParser{
@@ -58,26 +58,31 @@ export default class Parser extends htmlParser{
 		// tree management
 		if (!this.root) {
 			this.root = element
-		// } else if (!stack.length) {
-		// 	//永远进不去呢....
-		// 	// allow root elements with v-if, v-else-if and v-else
-		// 	if (root.if && (element.elseif || element.else)) {
-		// 		addIfCondition(root, {
-		// 			exp: element.elseif,
-		// 			block: element
-		// 		})
-		// 	}
+		} else if (!this.astStack.length) {
+			//两个并列节点...只能是if/else那种  不然就该报错
+
+
+			// 根节点并列的情况只允许 template v-if/esle
+			// allow root elements with v-if, v-else-if and v-else
+			if (this.root.if && (element.elseif || element.else)) {
+				addIfCondition(this.root, {
+					exp: element.elseif,
+					block: element
+				})
+			}
 		}
 
 		//为当前parent添加children
+		//this.currentParent 为当前父节点
+		//element 正常进入parent.children   而else/elseif进的是上一个兄弟if的ifConditions
 		if (this.currentParent) {
-			//if 回正常进入parent.children   而else/elseif进的是上一个兄弟if的ifConditions
+			
 			if (element.elseif || element.else) {
-				processIfConditions(element, currentParent)
+				processIfConditions(element, this.currentParent)
 			} else if (element.slotScope) { // scoped slot
-			  currentParent.plain = false
+			  this.currentParent.plain = false
 			  const name = element.slotTarget || '"default"'
-			  ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element
+			  ;(this.currentParent.scopedSlots || (this.currentParent.scopedSlots = {}))[name] = element
 			} else {
 				this.currentParent.children.push(element)
 				element.parent = this.currentParent
@@ -89,6 +94,8 @@ export default class Parser extends htmlParser{
 			//历史记录
 			this.astStack.push(element)
 		} else {
+			//正常标签是在tagPop时记录
+			//但单标签是push时记录 因为没children
 			element.end = end
 			element.raw = this.raw.slice(element.start, element.end)
 		}
@@ -111,6 +118,7 @@ export default class Parser extends htmlParser{
 		this.currentParent = this.astStack[this.astStack.length - 1]
 	}
 	chars (text, start, end) {
+		//当前没tag
 		if (!this.currentParent) {
 			return
 		}
@@ -122,16 +130,15 @@ export default class Parser extends htmlParser{
 		// // only preserve whitespace if its not right after a starting tag
 		// : preserveWhitespace && children.length ? ' ' : ''
 		if (text) {
-			let res
+			let res,expression
 			//delimiters值修改文案默认分隔符
 			//["{{", "}}"] 默认值
 			
 			//{{}}
-			if (text !== ' ' && (res = parseText(text))) {
+			if (text !== ' ' && (expression = parseTexts(text))) {
 				let element = {
 					type: 2,
-					expression: res.expression,
-					tokens: res.tokens,
+					expression,
 					text,
 					start,
 					end
@@ -142,7 +149,9 @@ export default class Parser extends htmlParser{
 			} else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
 				let element = {
 					type: 3,
-					text
+					text,
+					start,
+					end
 				}
 				element.raw = this.raw.slice(element.start, element.end)
 				children.push(element)
@@ -153,7 +162,9 @@ export default class Parser extends htmlParser{
 		this.currentParent.children.push({
 			type: 3,
 			text,
-			isComment: true
+			isComment: true,
+			start,
+			end
 		})
 	}
 }

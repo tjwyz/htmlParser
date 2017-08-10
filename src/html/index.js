@@ -209,12 +209,16 @@ export default class Parser{
 
             //文案处理逻辑
             //收集距离下个标签的文案
+            //
+            //在此只收集非标签内容
+            //收集完毕后获取plaintext并advance,继续循环,标签交给上方逻辑处理
             let text, rest, next
             if (textEnd >= 0) {
 
                 rest = this.html.slice(textEnd)
-                //在此只收集非标签内容
-                //收集完毕后获取plaintext并advance,继续循环,标签交给上方逻辑处理
+
+                //下一个 < 不是tag comment  继续获取文案
+                // <div id='as'  一段文案
                 while (
                 !endTag.test(rest) &&
                 !this.parseStartTag(rest) &&
@@ -227,17 +231,19 @@ export default class Parser{
                     rest = this.html.slice(textEnd)
                 }
                 text = this.html.substring(0, textEnd)
+
+                //callback chars interface
+                if (this.chars && text) {
+                    this.chars(text, this.index, this.index + textEnd)
+                }
+
                 this.advance(textEnd)
             }
+            
             //剩下的全是文案了.
             if (textEnd < 0) {
                 text = html
                 html = ''
-            }
-
-            //callback chars interface
-            if (this.chars && text) {
-                this.chars(text)
             }
         }
     }

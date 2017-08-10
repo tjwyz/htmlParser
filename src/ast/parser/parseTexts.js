@@ -15,22 +15,28 @@ export default function parseText (text,delimiters) {
     }
 
     const tokens = []
+
     let lastIndex = 0
 
     let match, index
-    while ((match = text.match(tagRE))) {
-        //开始位置
+    let rest = text
+    while ((match = rest.match(tagRE))) {
+        
+        // {{}}开始位置
         index = match.index
-        // push text token
-        if (index > lastIndex) {
-            tokens.push(JSON.stringify(text.slice(lastIndex, index)))
+        // 当前rest第一个 {{ 之前的文案
+        if (index > 0) {
+            tokens.push(JSON.stringify(rest.slice(0, index)))
         }
-        // tag token
-        //  {{ message.split('').reverse().join('') }}
+
         const exp = parseFilters(match[1].trim())
         tokens.push(`_s(${exp})`)
-        lastIndex = index + match[0].length
+
+        lastIndex = lastIndex + index + match[0].length
+        rest = text.slice(lastIndex)
     }
+    //最后一个}}后的文案
+    //文案就被stringify 
     if (lastIndex < text.length) {
         tokens.push(JSON.stringify(text.slice(lastIndex)))
     }
