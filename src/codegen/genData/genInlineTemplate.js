@@ -1,3 +1,4 @@
+//先ban了
 export default function genInlineTemplate (el) {
 	const ast = el.children[0]
 	if (process.env.NODE_ENV !== 'production' && (

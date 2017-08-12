@@ -1,5 +1,14 @@
 import directives from './directives/index'
 export default function genDirectives (el){
+    /*  v-show:emm.abcd.efgh="show"
+    [{  name:"show",
+        rawName:"v-show:emm.abcd.efgh",
+        value:(show),
+        expression:"show",
+        arg:"emm",
+        modifiers:{"abcd":true,"efgh":true}
+    }]
+     */
     const dirs = el.directives
     if (!dirs) return
     let res = 'directives:['

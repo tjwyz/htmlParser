@@ -1,12 +1,15 @@
-export default function genIf (el,altGen,altEmpty) {
+import { genElement } from '../index'
+import genOnce from './genOnce'
+
+export default function genIf (el) {
     el.ifProcessed = true // avoid recursion
     //特意slice一下 深拷贝   后续生成渲染函数字符串不影响ast中的ifConditions
-    return genIfConditions(el.ifConditions.slice(), altGen, altEmpty)
+    return genIfConditions(el.ifConditions.slice())
 }
 
-function genIfConditions (conditions,altGen,altEmpty) {
+function genIfConditions (conditions) {
     if (!conditions.length) {
-        return altEmpty || '_e()'
+        return '_e()'
     }
     //栈首元素
     const condition = conditions.shift()
@@ -24,7 +27,7 @@ function genIfConditions (conditions,altGen,altEmpty) {
         genTernaryExp(condition.block)
         }:${
         //递归
-        genIfConditions(conditions, altGen, altEmpty)
+        genIfConditions(conditions)
         }`
     } else {
         return `${genTernaryExp(condition.block)}`
@@ -32,9 +35,7 @@ function genIfConditions (conditions,altGen,altEmpty) {
 
     // v-if with v-once should generate code like (a)?_m(0):_m(1)
     function genTernaryExp (el) {
-        return altGen
-        ? altGen(el)
-        : el.once
+        return  el.once
         ? genOnce(el)
         : genElement(el)
     }

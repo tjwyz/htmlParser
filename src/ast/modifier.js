@@ -74,6 +74,7 @@ export function addHandler (el, name, value, modifiers, important) {
 	}
 
 	//value依然没有被JSON.stringify  就是这样很正常..
+	//value没办法是字符串  一定要是个变量 代表函数
 	
 	//es6 Enhanced Object Properties
 	const newHandler = { value, modifiers }

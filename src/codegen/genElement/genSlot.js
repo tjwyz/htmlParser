@@ -1,4 +1,5 @@
 import genChildren from '../genNode/genChildren'
+
 export default function genSlot (el) {
     const slotName = el.slotName || '"default"'
     const children = genChildren(el)

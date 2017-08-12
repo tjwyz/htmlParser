@@ -1,4 +1,6 @@
-export default function genFor (el, altGen, altHelper) {
+import { genElement } from '../index'
+
+export default function genFor (el) {
     const exp = el.for
     const alias = el.alias
     const iterator1 = el.iterator1 ? `,${el.iterator1}` : ''
@@ -16,13 +18,12 @@ export default function genFor (el, altGen, altHelper) {
     }
 
     el.forProcessed = true // avoid recursion
-    //${alias}${iterator1}${iterator2} 三个形参没写,  在上面补上了
-    //我先补上....可能是之前我ast parser的时候有问题
 
+    //${alias}${iterator1}${iterator2} 三个形参没写,  在上面补上了
     //exp是个数组
-    return `${altHelper || '_l'}((${exp}),` +
+    return `'_l'((${exp}),` +
     `function(${alias}${iterator1}${iterator2}){` +
         //循环gen标签自己
-        `return ${(altGen || genElement)(el)}` +
+        `return ${genElement(el)}` +
     '})'
 }

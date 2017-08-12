@@ -3,7 +3,7 @@
 import { genProps, genHandlers, genScopedSlots, genDirectives } from './genData/index'
 
 import { genFor, genIf, genOnce, genSlot, genStatic } from './genElement/index'
-import { genChildren, genComment, genText } from './genNode/index'
+import genChildren from './genNode/index'
 
 import { isReservedTag } from '../optimize/mapping'
 
@@ -37,10 +37,31 @@ export function generate (ast) {
     //render为了生成vnode
     //vnode = render.call(vm._renderProxy, vm.$createElement)
 
-    CodegenResult.render =  `with(this){return ${code}}`,
+    CodegenResult.render =  `with(this){return ${code}}`
+
+    //code 字符串由vtp生成
+    //最终有上面拼接的逻辑  所以code中的真正字符串需要额外“”
+    //没有额外“”的都是在运行时或实例对象上的值
+    //
 }
 
 export function genData (el) {
+    
+    /*
+    <div class="c-atom-aftclk" :tt = "xx|auto" v-show:emm.abcd.efgh="show" @click.native = 'lalalala'>
+    {   directives:[{name:"show",
+                    rawName:"v-show:emm.abcd.efgh",
+                    value:(show),
+                    expression:"show",
+                    arg:"emm",
+                    modifiers:{"abcd":true,"efgh":true}
+                }],
+        staticClass:"c-atom-aftclk",
+        attrs:{"tt":_f("auto")(xx)},
+        nativeOn:{"click":function($event){lalalala($event)}}
+    }
+    */
+
     let data = '{'
 
     // directives first.
@@ -67,7 +88,7 @@ export function genData (el) {
     }
     // record original tag name for components using "is" attribute
     if (el.component) {
-        //注意这个双引号  相当于JSON.stringify
+        //保留原始tag名
         data += `tag:"${el.tag}",`
     }
 
@@ -96,6 +117,7 @@ export function genData (el) {
     if (el.props) {
         data += `domProps:{${genProps(el.props)}},`
     }
+
     // event handlers
     if (el.events) {
         data += `${genHandlers(el.events, false)},`
@@ -111,6 +133,7 @@ export function genData (el) {
     if (el.scopedSlots) {
         data += `${genScopedSlots(el.scopedSlots)},`
     }
+
     // component v-model
     if (el.model) {
         data += `model:{value:${
@@ -147,15 +170,6 @@ export function genData (el) {
     return data
 }
 
-function genNode (node) {
-    if (node.type === 1) {
-        return genElement(node)
-    } if (node.type === 3 && node.isComment) {
-        return genComment(node)
-    } else {
-        return genText(node)
-    }
-}
 
 
 export function genElement (el) {
@@ -181,7 +195,7 @@ export function genElement (el) {
             const children = el.inlineTemplate ? null : genChildren(el, true)
             //componentName genData children返回的都是字符串
             //componentName 是由getBindingAttr 得出的
-            //componentName 可能是"componentName" 可能是 '"componentName"'
+            //componentName 可能是"componentName" 可能是 '"componentName"'  故动态
             code = return `_c(${componentName},${genData(el)}${
             children ? `,${children}` : ''
             })`

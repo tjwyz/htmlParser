@@ -41,6 +41,6 @@ export default function parseText (text,delimiters) {
         tokens.push(JSON.stringify(text.slice(lastIndex)))
     }
     //再拼回去
-    //plain{{this.value}}text ==>plain_s(this.value)text
+    // 'plain{{this.value}}text' ==>'"plain"_s(this.value)"text"'
     return tokens.join('+')
 }

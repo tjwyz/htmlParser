@@ -1,5 +1,7 @@
 // hoist static sub-trees out
+import { genElement } from '../index'
 import { CodegenResult } from '../index'
+
 export default function genStatic (el) {
     el.staticProcessed = true
     CodegenResult.staticRenderFns.push(`with(this){return ${genElement(el)}}`)

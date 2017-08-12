@@ -1,4 +1,7 @@
 // v-once
+import { genElement } from '../index'
+import genStatic from './genStatic'
+
 export default function genOnce (el) {
     el.onceProcessed = true
     if (el.if && !el.ifProcessed) {
@@ -14,12 +17,13 @@ export default function genOnce (el) {
             parent = parent.parent
         }
         if (!key) {
-            process.env.NODE_ENV !== 'production' && state.warn(
-            `v-once can only be used inside v-for that is keyed. `)
+            // process.env.NODE_ENV !== 'production' && state.warn(
+            // `v-once can only be used inside v-for that is keyed. `)
             return genElement(el)
         }
         return `_o(${genElement(el)},${state.onceId++}${key ? `,${key}` : ``})`
     } else {
+        //normal
         return genStatic(el)
     }
 }
