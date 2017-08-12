@@ -80,9 +80,10 @@ export default class Parser extends htmlParser{
 			if (element.elseif || element.else) {
 				processIfConditions(element, this.currentParent)
 			} else if (element.slotScope) { // scoped slot
-			  this.currentParent.plain = false
-			  const name = element.slotTarget || '"default"'
-			  ;(this.currentParent.scopedSlots || (this.currentParent.scopedSlots = {}))[name] = element
+				//先ban了
+				this.currentParent.plain = false
+				const name = element.slotTarget || '"default"'
+				;(this.currentParent.scopedSlots || (this.currentParent.scopedSlots = {}))[name] = element
 			} else {
 				this.currentParent.children.push(element)
 				element.parent = this.currentParent

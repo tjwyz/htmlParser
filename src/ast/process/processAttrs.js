@@ -15,7 +15,7 @@ export default function processAttrs (el) {
 		//2.事件指令进events/nativeEvents
 		//3.自定义的指令进directives
 		//4.非指令进attrs  但是非指令属性的value需要被JSON.stringify
-		//
+		//最终是为了生成渲染字符串时   所以本就是固定值的值需要多一个引号  也就是JSON.stringify
 
 		// name  v-bind:tjwyz.emm
 		if (dirRE.test(name)) { 

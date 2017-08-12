@@ -34,11 +34,7 @@ const modifierCode: { [key: string]: string } = {
   right: genGuard(`'button' in $event && $event.button !== 2`)
 }
 
-export function genHandlers (
-  events: ASTElementHandlers,
-  isNative: boolean,
-  warn: Function
-): string {
+export default function genHandlers (events, isNative, warn) {
   let res = isNative ? 'nativeOn:{' : 'on:{'
   for (const name in events) {
     const handler = events[name]

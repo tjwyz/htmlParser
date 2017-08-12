@@ -1,8 +1,49 @@
-/* @flow */
+//表单输入组件
 
 import config from 'core/config'
 import { addHandler, addProp, getBindingAttr } from 'compiler/helpers'
-import { genComponentModel, genAssignmentCode } from 'compiler/directives/model'
+
+export function genComponentModel (
+  el: ASTElement,
+  value: string,
+  modifiers: ?ASTModifiers
+): ?boolean {
+  const { number, trim } = modifiers || {}
+
+  const baseValueExpression = '$$v'
+  let valueExpression = baseValueExpression
+  if (trim) {
+    valueExpression =
+      `(typeof ${baseValueExpression} === 'string'` +
+        `? ${baseValueExpression}.trim()` +
+        `: ${baseValueExpression})`
+  }
+  if (number) {
+    valueExpression = `_n(${valueExpression})`
+  }
+  const assignment = genAssignmentCode(value, valueExpression)
+
+  el.model = {
+    value: `(${value})`,
+    expression: `"${value}"`,
+    callback: `function (${baseValueExpression}) {${assignment}}`
+  }
+}
+
+/**
+ * Cross-platform codegen helper for generating v-model value assignment code.
+ */
+export function genAssignmentCode (
+  value: string,
+  assignment: string
+): string {
+  const modelRs = parseModel(value)
+  if (modelRs.idx === null) {
+    return `${value}=${assignment}`
+  } else {
+    return `$set(${modelRs.exp}, ${modelRs.idx}, ${assignment})`
+  }
+}
 
 let warn
 

@@ -1,5 +1,6 @@
 import { getAndRemoveAttr,getBindingAttr } from '../../modifier'
 
+//正常写style 变成对象json.stringify
 function parseStyleText (cssText) {
   const res = {}
   //;

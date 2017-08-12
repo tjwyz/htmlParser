@@ -6,7 +6,7 @@
 </head>
 <body>
 <script type="text/javascript">
-template= `<template>
+template= `<template key="sss">
     <div class="c-atom-aftclk"
         :tt = "xx|auto"
          v-show:emm.abcd.efgh="show"
@@ -40,6 +40,24 @@ template= `<template>
         <div class="c-atom-aftclk-cover"></div>
     </div>
 </template>`;
+// template = `<div v-if="Math.random() > 0.5"
+// v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">
+// sss{{Now you see me}}ddddd{{xxxxx}}1111
+// 2</div>
+// // <div v-else>
+// //   {{Now you don't}}
+// // </div>`
+// template=`<div class="container">
+// 	<header>
+// 		<slot name="header"></slot>
+// 	</header>
+// 	<main>
+// 		<slot></slot>
+// 	</main>
+// 	<footer>
+// 		<slot name="footer"></slot>
+// 	</footer>
+// </div>`
 console.log( a = new vtp(template));
 </script>
 </body>
