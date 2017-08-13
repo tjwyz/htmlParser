@@ -1,16 +1,16 @@
 
-import model from './model'
+// import model from './model'
 import text from './text'
 import html from './html'
-import on from './on'
-import bind from './bind'
+// import on from './on'
+// import bind from './bind'
 // import { noop } from 'shared/util'
 
 export default {
-	model,
+	// model,
 	text,
-	html,
-	on,
-	bind
+	html
+	// on,
+	// bind
 	// cloak: noop
 }

@@ -1,4 +1,4 @@
-import genChildren from '../genNode/genChildren'
+import genChildren from '../genNode/index'
 
 export default function genSlot (el) {
     //非具名

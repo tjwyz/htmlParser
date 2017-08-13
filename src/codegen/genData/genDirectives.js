@@ -1,4 +1,4 @@
-import directives from './directives/index'
+// import directives from './directives/index'
 export default function genDirectives (el){
     /*  v-show:emm.abcd.efgh="show"
     [{  name:"show",
@@ -27,17 +27,17 @@ export default function genDirectives (el){
         
         //v-show v-XXXX(自定义)在编译阶段没有对应指令
         //gen为空  needRuntime自然仍为true
-        const gen = directives[dir.name]
+        // const gen = directives[dir.name]
 
-        if (gen) {
-            // compile-time directive that manipulates AST.
-            // returns true if it also needs a runtime counterpart.
+        // if (gen) {
+        //     // compile-time directive that manipulates AST.
+        //     // returns true if it also needs a runtime counterpart.
 
-            // v-model needRuntime
-            // gen 有返回值  则需要运行时
-            // v-html没有返回值  不用放入data中_c  needRuntime置否
-            needRuntime = !!gen(el, dir)
-        }
+        //     // v-model needRuntime
+        //     // gen 有返回值  则需要运行时
+        //     // v-html没有返回值  不用放入data中_c  needRuntime置否
+        //     needRuntime = !!gen(el, dir)
+        // }
         if (needRuntime) {
             hasRuntime = true
             res += `{name:"${dir.name}",rawName:"${dir.rawName}"${

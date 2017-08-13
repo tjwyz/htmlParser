@@ -1,5 +1,5 @@
 // direcative 指令属性的值后可能接.(即modifier)
-import { onRE, bindRE, dirRE, forAliasRE, forIteratorRE, argRE, modifierRE} from '../regular'
+import { onRE, bindRE, dirRE, argRE, modifierRE} from '../regular'
 export default function parseModifiers (name) {
 
 	let match = name.match(modifierRE)

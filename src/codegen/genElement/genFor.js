@@ -7,15 +7,15 @@ export default function genFor (el) {
     const iterator2 = el.iterator2 ? `,${el.iterator2}` : ''
 
     //是component 被for循环渲染多次 还没写key  报错
-    if (state.maybeComponent(el) && el.tag !== 'slot' && el.tag !== 'template' && !el.key) {
+    // if (state.maybeComponent(el) && el.tag !== 'slot' && el.tag !== 'template' && !el.key) {
         // state.warn(
         //   `<${el.tag} v-for="${alias} in ${exp}">: component lists rendered with ` +
         //   `v-for should have explicit keys. ` +
         //   `See https://vuejs.org/guide/list.html#key for more info.`,
         //   true /* tip */
         // )
-        return 
-    }
+        // return 
+    // }
 
     el.forProcessed = true // avoid recursion
 

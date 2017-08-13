@@ -1,5 +1,7 @@
 import { genElement } from '../index'
-import genChildren from '../genNode/genChildren'
+
+import genChildren from '../genNode/index'
+
 export default function genScopedSlots (slots) {
   return `scopedSlots:_u([${
     Object.keys(slots).map(key => {

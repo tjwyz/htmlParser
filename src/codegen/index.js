@@ -10,24 +10,24 @@ import genChildren from './genNode/index'
 
 // let maybeComponent = () => !isReservedTag(el.tag)
 
-export CodegenResult = {
+let CodegenResult = {
 };
 CodegenResult.staticRenderFns = []
 CodegenResult.onceId = 0;
-
-export function generate (ast) {
+export { CodegenResult }
+export default function generate (ast) {
     // const state = new CodegenState(options)
     const code = ast ? genElement(ast) : '_c("div")'
 
     //render为了生成vnode
     //vnode = render.call(vm._renderProxy, vm.$createElement)
-
     CodegenResult.render =  `with(this){return ${code}}`
 
     //code 字符串由vtp生成
     //最终有上面拼接的逻辑  所以code中的真正字符串需要额外“”
     //没有额外“”的都是在运行时或实例对象上的值
     //
+    return CodegenResult
 }
 
 export function genData (el) {
@@ -183,7 +183,7 @@ export function genElement (el) {
             //componentName genData children返回的都是字符串
             //componentName 是由getBindingAttr 得出的
             //componentName 可能是"componentName" 可能是 '"componentName"'  故动态
-            code = return `_c(${componentName},${genData(el)}${
+            code = `_c(${componentName},${genData(el)}${
             children ? `,${children}` : ''
             })`
         } else {

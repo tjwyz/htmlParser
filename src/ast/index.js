@@ -15,6 +15,8 @@ export default class Parser extends htmlParser{
 		//向外暴露的根节点
 		this.root;
 		this.currentParent;
+
+		this.parse()
 	}
 	tagPush (tag, attrs, unary, start ,end) {
 
@@ -34,6 +36,7 @@ export default class Parser extends htmlParser{
 		processFor(element)
 		processIf(element)
 		processOnce(element)
+
 		// element-scope stuff
 		// 特殊特性
 		processKey(element)
@@ -45,6 +48,7 @@ export default class Parser extends htmlParser{
 		
 		processRef(element)
 		processSlot(element)
+
 		//动态组件
 		processComponent(element)
 		
