@@ -41,7 +41,7 @@ function genNode (node) {
     }
 }
 
-export default function genChildren (el, altGenElement, altGenNode) {
+export default function genChildren (el) {
     const children = el.children
     if (children.length) {
         const el = children[0]
@@ -57,7 +57,7 @@ export default function genChildren (el, altGenElement, altGenNode) {
         // const normalizationType = checkSkip
         //   ? getNormalizationType(children, state.maybeComponent)
         //   : 0
-        const gen = altGenNode || genNode
+        const gen = genNode
         return `[${children.map(c => gen(c)).join(',')}]`
     }
 }

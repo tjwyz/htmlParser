@@ -45,6 +45,7 @@ export default class Parser extends htmlParser{
 		
 		processRef(element)
 		processSlot(element)
+		//动态组件
 		processComponent(element)
 		
 		//static start

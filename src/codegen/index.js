@@ -3,32 +3,17 @@
 import { genProps, genHandlers, genScopedSlots, genDirectives } from './genData/index'
 
 import { genFor, genIf, genOnce, genSlot, genStatic } from './genElement/index'
+
 import genChildren from './genNode/index'
 
-import { isReservedTag } from '../optimize/mapping'
+// import { isReservedTag } from '../optimize/mapping'
 
-let maybeComponent = () => !isReservedTag(el.tag)
-
-
-import { camelize, no, extend } from 'shared/util'
-import { baseWarn } from '../helpers'
-
-
-export class CodegenState {
-    constructor () {
-        // this.transforms = pluckModuleFunction(options.modules, 'transformCode')
-        // this.dataGenFns = pluckModuleFunction(options.modules, 'genData')
-        // this.directives = extend(extend({}, baseDirectives), options.directives)
-        // const isReservedTag = options.isReservedTag || no
-        // this.maybeComponent = (el) => !isReservedTag(el.tag)
-        this.onceId = 0
-        this.staticRenderFns = []
-    }
-}
+// let maybeComponent = () => !isReservedTag(el.tag)
 
 export CodegenResult = {
 };
 CodegenResult.staticRenderFns = []
+CodegenResult.onceId = 0;
 
 export function generate (ast) {
     // const state = new CodegenState(options)
@@ -184,6 +169,8 @@ export function genElement (el) {
     } else if (el.tag === 'template' && !el.slotTarget) {
         return genChildren(el) || 'void 0'
     } else if (el.tag === 'slot') {
+        //组件内插槽
+        //填充插槽逻辑 slotTarget 在 genData中 
         return genSlot(el)
     } else {
         // component or element
