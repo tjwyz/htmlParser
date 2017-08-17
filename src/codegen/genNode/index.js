@@ -45,6 +45,23 @@ export default function genChildren (el) {
     const children = el.children
     if (children.length) {
         const el = children[0]
+
+        //optimize single v-for 背景
+        /*
+        <template v-for="(rsitem, index) in upList">
+            <c-slink
+                :url="rsitem.href"
+                class="c-scroll-item"
+                :text="rsitem.text"
+                type="auto"></c-slink>
+        </template>
+         */
+        // '_l'((upList),function(rsitem,index){return  genElement(<template>)})
+        // genElement(<template>) == genChildren(<template>)
+        // '_l'((upList),function(rsitem,index){return  [genElement(<c-slink>)] })
+
+
+
         // optimize single v-for
         // if (children.length === 1 &&
         //   el.for &&
@@ -53,6 +70,8 @@ export default function genChildren (el) {
         // ) {
         //   return (altGenElement || genElement)(el)
         // }
+
+
 
         // const normalizationType = checkSkip
         //   ? getNormalizationType(children, state.maybeComponent)

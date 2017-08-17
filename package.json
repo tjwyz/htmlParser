@@ -1,22 +1,30 @@
 {
-  "name": "vtp",
-  "version": "0.0.0",
-  "description": "vue template parser",
-  "main": "index.js",
-  "scripts": {
-    "build": "rollup -w -c rollup/config.main.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tjwyz/vtp.git"
-  },
-  "author": "tjwyz",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tjwyz/vtp/issues"
-  },
-  "homepage": "https://github.com/tjwyz/vtp#readme",
-  "devDependencies": {
-    "rollup-plugin-buble": "^0.19.1"
-  }
+    "name": "vtp",
+    "version": "0.0.0",
+    "description": "vue template parser",
+    "main": "dist/vtp.js",
+    "bin": {
+        "vtpt": "./test/index.js",
+        "vtpc": "./bin/index.js"
+    },
+    "scripts": {
+        "build": "rollup -w -c rollup/config.main.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tjwyz/vtp.git"
+    },
+    "author": "tjwyz",
+    "license": "ISC",
+    "bugs": {
+        "   url": "https://github.com/tjwyz/vtp/issues"
+    },
+    "homepage": "https://github.com/tjwyz/vtp#readme",
+    "devDependencies": {
+        "colors": "^1.2.1",
+        "commander": "^2.15.0",
+        "diff": "^3.5.0",
+        "jsdiff": "^1.1.1",
+        "rollup-plugin-buble": "^0.19.1"
+    }
 }

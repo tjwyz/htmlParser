@@ -12,7 +12,8 @@ import codeGen from './codegen/index'
 
 export default function (template) {
 	var ast = new Parser(template)
+
 	var CodegenResult = codeGen(ast.root)
-	CodegenResult.ast = ast
+	CodegenResult.ast = ast.root
 	return CodegenResult
 }
