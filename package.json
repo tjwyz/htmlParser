@@ -4,8 +4,7 @@
     "description": "vue template parser",
     "main": "dist/vtp.js",
     "bin": {
-        "vtpt": "./test/index.js",
-        "vtpc": "./bin/index.js"
+        "vtp": "./bin/index.js"
     },
     "scripts": {
         "build": "rollup -w -c rollup/config.main.js"
@@ -24,6 +23,7 @@
         "colors": "^1.2.1",
         "commander": "^2.15.0",
         "diff": "^3.5.0",
+        "js-beautify": "^1.7.5",
         "jsdiff": "^1.1.1",
         "rollup-plugin-buble": "^0.19.1"
     }
