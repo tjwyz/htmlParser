@@ -23,7 +23,7 @@
         "colors": "^1.2.1",
         "commander": "^2.15.0",
         "diff": "^3.5.0",
-        "js-beautify": "^1.7.5",
+        "js-beautify": "^1.7.5"
     },
     "devDependencies": {
         "rollup": "^0.55.2",
