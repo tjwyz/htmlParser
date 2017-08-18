@@ -1,6 +1,6 @@
 {
     "name": "vtp",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "vue template parser",
     "main": "dist/vtp.js",
     "bin": {
@@ -15,12 +15,12 @@
         "url": "git+https://github.com/tjwyz/vtp.git"
     },
     "author": "tjwyz",
-    "license": "ISC",
+    "license": "MIT",
     "bugs": {
-        "   url": "https://github.com/tjwyz/vtp/issues"
+        "url": "https://github.com/tjwyz/vtp/issues"
     },
     "homepage": "https://github.com/tjwyz/vtp#readme",
-    "devDependencies": {
+    "dependencies": {
         "colors": "^1.2.1",
         "commander": "^2.15.0",
         "diff": "^3.5.0",
