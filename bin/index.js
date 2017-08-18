@@ -5,7 +5,7 @@ var path = require('path');
 
 var program = require('commander');
 program
-  .version('0.0.1','-v, --version')
+  .version('0.0.3','-v, --version')
   .option('-c, --compile', 'just compile it')
   .option('-d, --diff', 'get the difference from vueCompiler@2.4.0')
   .parse(process.argv);
