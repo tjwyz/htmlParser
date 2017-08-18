@@ -33,7 +33,7 @@ if (program.compile) {
 }
 
 if (program.diff) {
-	fs.readFile(path.join(__dirname,'../test/unit/' + tpl + '.tpl'), 'utf8', function (err, template) {
+	fs.readFile(tpl, 'utf8', function (err, template) {
 		if (err) {
 			throw err;
 		}
