@@ -1,4 +1,5 @@
 <template key="sss">
+	<trainCity @showCityName="updateCity" :index="goOrtoCity"></trainCity>
 	<div class="c-atom-aftclk"
 	 :tt = "xx|auto"
 	  v-show:emm.abcd.efgh="show"

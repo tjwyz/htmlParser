@@ -8,6 +8,7 @@ program
   .version('0.0.3','-v, --version')
   .option('-c, --compile', 'just compile it')
   .option('-d, --diff', 'get the difference from vueCompiler@2.4.0')
+  .option('-o, --output', 'vue-loader now')
   .parse(process.argv);
 
 var commander = program.parse(process.argv);
@@ -57,14 +58,3 @@ if (program.diff) {
 		console.log();
 	});
 }
-
-
-
-
-
-
-
-
-
-
-
