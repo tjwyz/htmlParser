@@ -1,4 +1,4 @@
-define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) { %> ,<%- requireArr -%> <% } %>], function(require, exports, module) {
+define('tjwyz', ['require', 'exports', 'module' ], function(require, exports, module) {
 
     /* get render function */
     var _module1 = {
@@ -9,12 +9,14 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
 
         module.exports = {
             render: function() {
-                <%- render -%>
-
+                with(this) {
+    return _c('div', {
+        staticClass: "c-atom-aftclk-cover"
+    })
+}
             },
             staticRenderFns: [
-                <%- staticRenderFns -%>
-            ]
+                            ]
         };
 
 
@@ -32,7 +34,14 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
             value: true
         });
 
-        <%- script -%>
+        
+
+    exports.default = {
+        mounted: function () {
+        },
+        methods: {
+        }
+    };
     })(_module2, _module2.exports);
 
     var obj = _module2.exports.default || _module2.exports;
@@ -51,7 +60,15 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
             value: true
         });
 
-        module.exports = <%- config -%>
+        module.exports = 
+
+    {
+        data: function(){
+            return {
+                functionshow: 0
+            }
+        }
+    }
 
     })(_module3, _module3.exports);
 
@@ -60,7 +77,7 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
     _module3.exports.components && (obj.components = _module3.exports.components);
 
 
-    obj._scopeId = "<%- scopeId -%>";
+    obj._scopeId = "vue-7c1d0120-2cf7-11e8-91fa-c375603acd0f";
 
     module.exports = obj;
 });

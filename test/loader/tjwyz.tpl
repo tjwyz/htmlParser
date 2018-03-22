@@ -1,85 +1,28 @@
 <template>
-    <div class="c-atom-aftclk"
-         v-show="show"
-         @click="function(){tjwyz = 111}" >
-        <img
-            class="c-atom-aftclk-title"
-            :text="title"
-            icon="baidu"/>
-        <div class="c-scroll-wrapper">
-            <div class="c-scroll-touch">
-                <div class="c-gap-bottom-small">
-                    <template v-for="(rsitem, index) in upList">
-                        <tjwyz 
-                            :url="rsitem.href"
-                            class="c-scroll-item"
-                            :text="rsitem.text"
-                            type="auto"></tjwyz>
-                    </template>
-                </div>
-            </div>
-        </div>
-        <div class="c-atom-aftclk-cover"></div>
-    </div>
+    <div class="c-atom-aftclk-cover"></div>
 </template>
-
-
 
 <script type="config">
     {
-        props: {
-            upList: {
-                type: Array
-            },
-            downList: {
-                type: Array
-            },
-            title: {
-                type: String,
-                default: '大家还搜'
-            },
-            order: {
-                type: Number,
-                required: true
-            }
-        },
-        components: {
-            tjwyz:require('tjwyz')
-
-        },
         data: function(){
-            return{
-                show: 0
+            return {
+                functionshow: 0
             }
         }
     }
-
 </script>
-
 
 <script>
     exports.default = {
         mounted: function () {
-            this._init();
         },
         methods: {
-            _init: function() {
-                console.log("ls");
-            },
-            toggle: function (bool) {
-                if (bool) {
-                    this.show = this.upList && this.upList.length;
-                }else {
-                    this.show = 0;
-                }
-            },
-            replace: function(data) {
-                this.upList = data.upList;
-                this.downList = data.downList;
-            }
         }
     };
 </script>
+
+
+
 
 <style scoped>
     .c-atom-aftclk{
@@ -132,6 +75,9 @@
         background-image: linear-gradient(to right,rgba(241,241,241,0),#f1f1f1);
     }
 </style>
+
+
+
 <style>
     .c-atom-aftclk-title .c-title {
         font-size: 14px;

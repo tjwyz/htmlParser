@@ -1,20 +1,29 @@
 <template>
     <div class="c-atom-aftclk"
-         v-show="show"
+         a-show="show"
          @click="function(){tjwyz = 111}" >
-        <img
+        <c-title
             class="c-atom-aftclk-title"
             :text="title"
             icon="baidu"/>
         <div class="c-scroll-wrapper">
             <div class="c-scroll-touch">
                 <div class="c-gap-bottom-small">
-                    <template v-for="(rsitem, index) in upList">
-                        <tjwyz 
+                    <template a-for="(rsitem, index) in upList">
+                        <c-slink 
                             :url="rsitem.href"
                             class="c-scroll-item"
                             :text="rsitem.text"
-                            type="auto"></tjwyz>
+                            type="auto"></c-slink>
+                    </template>
+                </div>
+                <div>
+                    <template a-for="(rsitem, index) in downList">
+                        <c-slink 
+                            :url="rsitem.href"
+                            class="c-scroll-item"
+                            :text="rsitem.text"
+                            type="auto"></c-slink>
                     </template>
                 </div>
             </div>
@@ -22,8 +31,6 @@
         <div class="c-atom-aftclk-cover"></div>
     </div>
 </template>
-
-
 
 <script type="config">
     {
@@ -44,27 +51,40 @@
             }
         },
         components: {
-            tjwyz:require('tjwyz')
-
+            'c-title': 'search-ui/Title/Title',
+            'c-slink': 'search-ui/Slink/Slink'
         },
-        data: function(){
-            return{
-                show: 0
-            }
+        data: {
+            show: 0
         }
     }
-
 </script>
 
-
 <script>
-    exports.default = {
+    var storage = require('utils/storage');
+
+    export default {
         mounted: function () {
             this._init();
         },
         methods: {
             _init: function() {
-                console.log("ls");
+                var that = this;
+                require(['modules/recmmend/aftclk_rcmd/asyn_rcmd'],function(res) {
+                    var rcmdAsyncData = res.getData('aftClk');
+                    if (rcmdAsyncData && rcmdAsyncData[that.order]) {
+                        that.replace(rcmdAsyncData[that.order]);
+                    }
+                });
+
+                var rcmdIndex = 'index_after_click_' + window.location.href;
+
+                try {
+                    if (storage.ss.getItem(rcmdIndex) == that.order) {
+                        that.toggle(1);
+                    }
+                } catch (ex) {
+                }
             },
             toggle: function (bool) {
                 if (bool) {
@@ -80,7 +100,6 @@
         }
     };
 </script>
-
 <style scoped>
     .c-atom-aftclk{
         background-color: #f1f1f1;
