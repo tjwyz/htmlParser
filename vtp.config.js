@@ -1,4 +1,6 @@
 module.exports = {
 	src:'./test/loader/',
-	output:'./output'
+	output:'./output',
+	uglify:true,
+	
 }

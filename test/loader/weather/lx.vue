@@ -44,8 +44,7 @@
             }
         },
         components: {
-            tjwyz:require('tjwyz')
-
+            tjwyz:require('tjwyz/sss')
         },
         data: function(){
             return{
@@ -55,6 +54,7 @@
     }
 
 </script>
+
 
 
 <script>
@@ -149,3 +149,4 @@
         margin-bottom: -.1rem;
     }
 </style>
+

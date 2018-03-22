@@ -16,10 +16,36 @@
     exports.default = {
         mounted: function () {
         },
+
+
+
+
+
+
+
+
+
         methods: {
         }
     };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -77,7 +103,6 @@
 </style>
 
 
-
 <style>
     .c-atom-aftclk-title .c-title {
         font-size: 14px;
@@ -86,6 +111,8 @@
         margin-top: .02rem;
         margin-bottom: .08rem;
     }
+
+
     .c-atom-aftclk-title .c-title .c-icon {
         font-size: 14px;
         margin-left: .02rem;
@@ -95,3 +122,10 @@
         margin-bottom: -.1rem;
     }
 </style>
+
+
+
+
+
+
+

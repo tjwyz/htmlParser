@@ -1,4 +1,4 @@
-define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) { %> ,<%- requireArr -%> <% } %>], function(require, exports, module) {
+define('<%= moduleName %>', ['require', 'exports', 'module' <% if (requireArr) { %> ,<%= requireArr %> <% } %>], function(require, exports, module) {
 
     /* get render function */
     var _module1 = {
@@ -9,11 +9,11 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
 
         module.exports = {
             render: function() {
-                <%- render -%>
+                <%= render %>
 
             },
             staticRenderFns: [
-                <%- staticRenderFns -%>
+                <%= staticRenderFns %>
             ]
         };
 
@@ -32,7 +32,7 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
             value: true
         });
 
-        <%- script -%>
+        <%= script %>
     })(_module2, _module2.exports);
 
     var obj = _module2.exports.default || _module2.exports;
@@ -51,7 +51,7 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
             value: true
         });
 
-        module.exports = <%- config -%>
+        module.exports = <%= config %>
 
     })(_module3, _module3.exports);
 
@@ -60,7 +60,7 @@ define('<%- moduleName -%>', ['require', 'exports', 'module' <% if (requireArr) 
     _module3.exports.components && (obj.components = _module3.exports.components);
 
 
-    obj._scopeId = "<%- scopeId -%>";
+    obj._scopeId = "<%= scopeId %>";
 
     module.exports = obj;
 });
