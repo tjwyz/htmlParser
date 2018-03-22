@@ -37,19 +37,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 <style scoped>
     .c-atom-aftclk{
         background-color: #f1f1f1;

@@ -10,7 +10,7 @@ const log = console.log;
 const UglifyJS = require("uglify-js");
 const CleanCSS = require('clean-css');
 
-const store = require('../store');
+const store = require('../../store');
 
 
 //默认就一个template
@@ -24,14 +24,11 @@ const styleRegular = /<style(?:\s*)((?:scoped)?)(?:\s*)>([^<]*)<\/style>/g;
 
 
 //require
-const scriptRequireRegular = /require\((?:'|")([^(require)]*)(?:'|")\)/g;
-const configRequireRegular = /require\((?:'|")([^(require)]*)(?:'|")\)/g;
+//负向前瞻....((?!require).*)
+const scriptRequireRegular = /require\((?:'|")((?!require).*)(?:'|")\)/g;
+const configRequireRegular = /require\((?:'|")((?!require).*)(?:'|")\)/g;
 
-
-
-
-
-exports.compile = function ( filePath, moduleName ) {
+module.exports = function ( filePath, moduleName ) {
 	var templateStr = fs.readFileSync(filePath, {encoding:'utf8'});
 
 	var template = style = script = config = '';

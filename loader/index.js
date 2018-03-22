@@ -3,18 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const chokidar = require('chokidar');
 const ejs = require('ejs');
-const vueCompiler = require('../test/base/vue@2.4.0-compiler');
 const program = require('commander');
-const beautify = require('js-beautify').js_beautify
-const uuidV1 = require('uuid/v1');
 const shell = require("shelljs");
 const chalk = require('chalk');
 const timestamp = require('time-stamp');
 const log = console.log;
-const UglifyJS = require("uglify-js");
-const CleanCSS = require('clean-css');
-const rread = require('readdir-recursive');
-const rd = require('rd');
+const store = require('./store');
 // program
 //   .version('0.0.3','-v, --version')
 //   .option('-c, --compile', 'just compile it')
@@ -32,71 +26,39 @@ var cwdPath = path.dirname(configFilePath);
 var config = require(configFilePath);
 var workSrcDirectroy = path.normalize(cwdPath + '/' + config.src);
 var outPutDirectroy = path.normalize(cwdPath + '/' + config.output);
-// console.log(workSrcDirectroy);
 
 
 
-var preCompileVue = require('./vueloader/index').compile;
-var store = require('./store');
+var compiler = require('./compiler/index');
+
+
 
 
 var compiling = false;
-// One-liner for current directory, ignores .dotfiles
+
+
 chokidar.watch(workSrcDirectroy, {ignored: /(^|[\/\\])\../}).on('change', (event, currenpath) => {
-	// if (!compiling){
-	// 	compiling = true;
-	// 	new Promise(function (resolve, reject) {
-	// 		compileStatic(currenpath,workSrcDirectroy,resolve);
-	// 	}).then(new Promise(function (resolve, reject) {
-	// 		compileTemplate(resolve)
-	// 	}).then(function(){
-	// 		compiling = false;
-	// 	}));
-	// }
-	
-	// console.log(workSrcDirectroy);
 
-	
-	var files = rread.fileSync(workSrcDirectroy);
-
-	//1. Compile  编译
-	files.forEach(function(realPath){
-		var relativePath = path.relative(workSrcDirectroy, realPath);
-		var extName = path.extname(realPath).slice(1);
-		//moduleName中反斜杠 统一写成斜杠
-		var moduleName = relativePath.split(".")[0].replace(/\\/g, "/");
-		if (extName == 'vue') {
-			preCompileVue(realPath,moduleName);
-		} else if (extName == 'js') {
-			var jsStr = fs.readFileSync(realPath, {encoding:'utf8'});
-			jsStr = UglifyJS.minify(jsStr).code;
-			store.set(moduleName + '.js',jsStr);
-		} else if (extName == 'css') {
-			var cssStr = fs.readFileSync(realPath, {encoding:'utf8'});
-			cssStr = new CleanCSS({}).minify(cssStr).styles;
-			store.set(moduleName + '.css',cssStr);
-		}
-
-	})
-	
-	console.log(store.all())
-
+	log(chalk.green(timestamp('YYYY/MM/DD HH:mm:ss')));
+	compiler(workSrcDirectroy);
+	log(chalk.green('compile has been done!'));
+	console.log(store.all());
 
 	// 2. pack  打包
-	files.forEach(function(realPath){
-		var relativePath = path.relative(workSrcDirectroy, realPath);
-		var extName = path.extname(realPath).slice(1);
-		//moduleName中反斜杠 统一写成斜杠
-		var moduleName = relativePath.split(".")[0].replace(/\\/g, "/");
-		if (extName == 'js') {
-			
-		} else if (extName == 'css') {
-			
-		} else if (extName == 'html') {
-			
-		}
+	// files.forEach(function(realPath){
+	// 	var relativePath = path.relative(workSrcDirectroy, realPath);
+	// 	var extName = path.extname(realPath).slice(1);
+	// 	//moduleName中反斜杠 统一写成斜杠
+	// 	var moduleName = relativePath.split(".")[0].replace(/\\/g, "/");
+	// 	if (extName == 'js') {
 
-	})
+	// 	} else if (extName == 'css') {
+
+	// 	} else if (extName == 'html') {
+
+	// 	}
+
+	// })
 });
 
 

@@ -25,6 +25,9 @@
 
 
 
+
+
+
 <script type="config">
     {
         props: {
@@ -44,7 +47,7 @@
             }
         },
         components: {
-            tjwyz:require('tjwyz/sss')
+            tjwyz:require('weather/tjwyz')
         },
         data: function(){
             return{
@@ -52,6 +55,8 @@
             }
         }
     }
+
+
 
 </script>
 
